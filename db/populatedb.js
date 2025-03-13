@@ -24,6 +24,9 @@ async function main() {
   console.log("seeding...");
   const client = new Client({
     connectionString: connectionString,
+    ssl: {
+        rejectUnauthorized: false, // Set this to false if you're using a self-signed certificate
+      }
   });
   await client.connect();
   await client.query(SQL);
