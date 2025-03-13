@@ -1,24 +1,27 @@
 require("dotenv").config();
 
-const connectionString = process.env.connectionString;
+const connectionString = process.env.CONNECTION_STRING;
+const formattedDate = new Date().toISOString().split("T")[0];
 
 const { Client } = require("pg");
-const SQL = `
+const CREATE = `
     CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-        user VARCHAR(50),
+        "user" VARCHAR(50),
         text VARCHAR(255),
         added DATE
     );
-
-    INSERT INTO messages (user, text, added)
+    `;
+const INSERT = `
+    INSERT INTO messages ("user", text, added)
     VALUES
-        ('Amando', 'Hi there!', ${new Date()}),
-        ('Charles', 'Hello World!', ${new Date()});
+        ($1, $2, $3),
+        ($4, $5, $6);
     `;
 
 async function main() {
   console.log("seeding...");
+  console.log(connectionString);
   const client = new Client({
     connectionString: connectionString,
     ssl: {
@@ -26,7 +29,15 @@ async function main() {
     },
   });
   await client.connect();
-  await client.query(SQL);
+  await client.query(CREATE);
+  await client.query(INSERT, [
+    "Amando",
+    "Hi there!",
+    new Date(),
+    "Charles",
+    "Hello World!",
+    new Date(),
+  ]);
   await client.end();
   console.log("done");
 }
