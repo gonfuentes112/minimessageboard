@@ -3,7 +3,7 @@ const host = process.env.DATABASE_HOST;
 const user = process.env.DATABASE_USER;
 const pass = process.env.DATABASE_PASSWORD;
 const dbname = process.env.DATABASE_NAME;
-const connectionString = `postgres://${user}:${pass}@e${host}/${dbname}`;
+const connectionString = `postgres://${user}:${pass}@${host}/${dbname}`;
 
 const { Client } = require("pg");
 const SQL = `
