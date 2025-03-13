@@ -7,9 +7,9 @@
 </head>
 <body>
     
-    <% messages.forEach((message, index) => {%>
+    <% messages.forEach((message) => {%>
         <ul>
-        <%- include("message", {message: message, index: index})%>
+        <%- include("message", {message: message})%>
         </ul>
     <%})%>
     <a href="/new"><button type="button">Add new message</button></a>

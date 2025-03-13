@@ -1,37 +1,31 @@
 const { Router } = require("express");
+const queries = require("../db/queries");
 const indexRouter = Router();
 
-const messages = [
-  {
-    text: "Hi there!",
-    user: "Amando",
-    added: new Date(),
-  },
-  {
-    text: "Hello World!",
-    user: "Charles",
-    added: new Date(),
-  },
-];
-
-indexRouter.get("/", (req, res) => {
+indexRouter.get("/", async (req, res) => {
+  const messages = await queries.getAllMessages();
   res.render("index", { title: "Mini Messageboard", messages: messages });
 });
 
 indexRouter.get("/new", (req, res) => {
-    res.render("form");
-  });
-  
-indexRouter.post("/new", (req, res) => {
-    const newName = req.body.username;
-    const newText = req.body.messagetext;
-    messages.push({text: newText, user: newName, added: new Date()})
-    res.redirect("/")
+  res.render("form");
 });
 
-indexRouter.get("/messages/:messageid", (req, res) => {
-    const messageid = req.params.messageid;
-    res.render("messagedetail", {message: messages[messageid]})
-})
+indexRouter.post("/new", async (req, res) => {
+  const newName = req.body.username;
+  const newText = req.body.messagetext;
+  await queries.insertMessage({
+    user: newName,
+    text: newText,
+    added: new Date(),
+  });
+  res.redirect("/");
+});
+
+indexRouter.get("/messages/:messageid", async (req, res) => {
+  const messageid = Number(req.params.messageid);
+  const rows = await queries.getMessageById(messageid);
+  res.render("messagedetail", { message: rows[0] });
+});
 
 module.exports = indexRouter;
